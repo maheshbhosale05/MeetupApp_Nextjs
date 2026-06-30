@@ -11,7 +11,6 @@ const AddNewMeetup = () => {
       },
     });
     const data = await response.json();
-    console.log(data);
   };
   return <NewMeetupForm onAddMeetup={addMeetupHandler} />;
 };

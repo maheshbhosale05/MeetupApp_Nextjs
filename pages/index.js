@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 
 import MeetupList from "../components/meetups/MeetupList";
+import { connectToDatabase } from "../utils/apiConnection";
 
 const DUMMY_MEETUPS = [
   {
@@ -8,7 +9,7 @@ const DUMMY_MEETUPS = [
     title: "A First Meetup",
     image: "https://wallpaperaccess.com/full/3824935.jpg",
     address: "Some Address 5, 12345 Oslo, Norway",
-    description: "This is a first meetup!"
+    description: "This is a first meetup!",
   },
   {
     id: "m2",
@@ -16,8 +17,8 @@ const DUMMY_MEETUPS = [
     image:
       "https://cdn.pixabay.com/photo/2018/09/30/20/49/amsterdam-3714607_1280.jpg",
     address: "Some Address 10, 12345 Amsterdam, Netherlands",
-    description: "This is a second meetup!"
-  }
+    description: "This is a second meetup!",
+  },
 ];
 
 const HomePage = (props) => {
@@ -42,12 +43,21 @@ const HomePage = (props) => {
 // }
 
 export async function getStaticProps() {
-  // fetch data from an API or database
+  const meetups = await connectToDatabase(async (meetupsCollection) => {
+    const data = await meetupsCollection.find().toArray();
+    return data.map((meetup) => ({
+      id: meetup._id.toString(),
+      title: meetup.title,
+      image: meetup.image,
+      address: meetup.address,
+      description: meetup.description,
+    }));
+  });
   return {
     props: {
-      meetups: DUMMY_MEETUPS
+      meetups: meetups,
     },
-    revalidate: 1
+    revalidate: 1,
   };
 }
 
